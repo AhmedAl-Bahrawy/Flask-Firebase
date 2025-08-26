@@ -11,10 +11,12 @@ class UserModel(UserMixin, db.Model):
     idToken = db.Column(db.String(512), nullable=True)
     fname = db.Column(db.String(255), nullable=False)
     lname = db.Column(db.String(255), nullable=False)
+    is_verified = db.Column(db.Boolean, default=False)
 
-    def __init__(self, localId, email, fname, lname, idToken=None):
+    def __init__(self, localId, email, fname, lname, idToken=None, is_verified=False):
         self.id = localId
         self.email = email
         self.fname = fname
         self.lname = lname
         self.idToken = idToken
+        self.is_verified = is_verified

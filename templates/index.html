@@ -202,6 +202,81 @@
           transform: translateY(0px) rotate(0deg);
         }
       }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+
+      .flash-messages {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
+      }
+
+      .flash {
+        padding: 16px 24px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        animation: slideInRight 0.5s ease forwards;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .flash::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0.1),
+          rgba(255, 255, 255, 0)
+        );
+        pointer-events: none;
+      }
+
+      .flash.success {
+        background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+      }
+
+      .flash.error {
+        background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+      }
+
+      .flash.hide {
+        animation: fadeOut 0.5s ease forwards;
+      }
     </style>
   </head>
   <body>
@@ -219,6 +294,65 @@
         </form>
       </div>
     </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+      <div class="flash {{ category }}" role="alert">
+        {% if category == 'success' %}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+            fill="currentColor"
+          />
+        </svg>
+        {% else %}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+            fill="currentColor"
+          />
+        </svg>
+        {% endif %} {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% if not user.is_verified %}
+    <div class="flash error" role="alert">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+          fill="currentColor"
+        />
+      </svg>
+      Please verify your email to access all features.
+    </div>
+    {% endif %} {# end if not user.is_verified #}
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const flashMessages = document.querySelectorAll(".flash");
+        flashMessages.forEach(function (flash) {
+          // Auto-dismiss after 5 seconds
+          setTimeout(() => {
+            flash.classList.add("hide");
+            // Remove from DOM after animation
+            setTimeout(() => {
+              flash.remove();
+            }, 500);
+          }, 5000);
+
+          // Add click to dismiss
+          flash.addEventListener("click", function () {
+            flash.classList.add("hide");
+            setTimeout(() => {
+              flash.remove();
+            }, 500);
+          });
+        });
+      });
+    </script>
 
     <div class="container">
       <div class="welcome-section">

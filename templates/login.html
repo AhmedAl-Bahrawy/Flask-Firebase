@@ -283,6 +283,27 @@
         left: 30%;
         animation-delay: 4s;
       }
+
+      .flash-messages {
+        margin-bottom: 1rem;
+      }
+
+      .flash {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        animation: flashIn 0.3s ease-out;
+      }
+
+      .flash.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+      }
+
+      .flash.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+      }
     </style>
   </head>
   <body>
@@ -293,6 +314,14 @@
     </div>
     <div class="container">
       <h2>Welcome Back</h2>
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %}
       <form method="post">
         <div class="form-group">
           <input
