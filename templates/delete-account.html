@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Delete Account</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(4px);
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .warning-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.5rem;
+        display: block;
+        color: #ef4444;
+      }
+
+      h2 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.75em;
+        font-weight: 600;
+      }
+
+      .warning-text {
+        text-align: center;
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #4a5568;
+        font-size: 0.9rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .checkbox-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-cancel {
+        background: #e2e8f0;
+        color: #4a5568;
+      }
+
+      .btn-cancel:hover {
+        background: #cbd5e0;
+      }
+
+      .btn-delete {
+        background: #ef4444;
+        color: white;
+      }
+
+      .btn-delete:hover {
+        background: #dc2626;
+      }
+
+      .btn-delete:disabled {
+        background: #fca5a5;
+        cursor: not-allowed;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .container {
+        animation: fadeIn 0.6s ease-out;
+      }
+
+      .flash-messages {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
+      }
+
+      .flash {
+        padding: 16px 24px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        animation: slideInRight 0.5s ease forwards;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .flash.success {
+        background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+      }
+
+      .flash.error {
+        background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+      <div class="flash {{ category }}" role="alert">
+        {% if category == 'success' %}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+            fill="currentColor"
+          />
+        </svg>
+        {% else %}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+            fill="currentColor"
+          />
+        </svg>
+        {% endif %} {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <div class="container">
+      <svg
+        class="warning-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+          fill="currentColor"
+        />
+      </svg>
+
+      <h2>Delete Account</h2>
+      <p class="warning-text">
+        This action cannot be undone. Once you delete your account, all your
+        data will be permanently removed.
+      </p>
+
+      <form action="{{ url_for('delete_account') }}" method="POST">
+        <div class="form-group">
+          <label for="password">Confirm your password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            required
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <div class="checkbox-group">
+          <label>
+            <input type="checkbox" id="confirm" required />
+            I understand that this action cannot be undone
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <a href="/" class="btn btn-cancel">Cancel</a>
+          <button type="submit" class="btn btn-delete" id="deleteBtn" disabled>
+            Delete Account
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const confirmCheckbox = document.getElementById("confirm");
+        const deleteBtn = document.getElementById("deleteBtn");
+        const passwordInput = document.getElementById("password");
+
+        function updateDeleteButton() {
+          deleteBtn.disabled = !confirmCheckbox.checked || !passwordInput.value;
+        }
+
+        confirmCheckbox.addEventListener("change", updateDeleteButton);
+        passwordInput.addEventListener("input", updateDeleteButton);
+
+        // Flash message auto-dismiss
+        const flashMessages = document.querySelectorAll(".flash");
+        flashMessages.forEach(function (flash) {
+          setTimeout(() => {
+            flash.classList.add("hide");
+            setTimeout(() => {
+              flash.remove();
+            }, 500);
+          }, 5000);
+
+          flash.addEventListener("click", function () {
+            flash.classList.add("hide");
+            setTimeout(() => {
+              flash.remove();
+            }, 500);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

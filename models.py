@@ -14,7 +14,7 @@ class UserModel(UserMixin, db.Model):
     lname = db.Column(db.String(255), nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
 
-    def __init__(self, localId, email, fname, lname, idToken=None, refresh_token=None, is_verified=False):
+    def __init__(self, localId, email, fname, lname, idToken=None, refresh_token=None, is_verified=False, is_google_user=False):
         self.id = localId
         self.email = email
         self.fname = fname

@@ -1,13 +1,18 @@
 import pyrebase 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 config = {
-    'apiKey': "AIzaSyADDXhfQxgj76lNDq2W9-BqlC3XYTOXWp8",
-    'authDomain': "flask-auth-c8ce2.firebaseapp.com",
-    'projectId': "flask-auth-c8ce2",
-    'storageBucket': "flask-auth-c8ce2.firebasestorage.app",
-    'messagingSenderId': "50459132624",
-    'appId': "1:50459132624:web:a8ff2c906c78d814a314d5",
-    'measurementId': "G-K3MJFW9LHF",
+    'apiKey': os.getenv("API_KEY"),
+    'authDomain': os.getenv("AUTH_DOMAIN"),
+    'projectId': os.getenv("PROJECT_ID"),
+    'storageBucket': os.getenv("STORAGE_BUCKET"),
+    'messagingSenderId': os.getenv("MESSAGING_SENDER_ID"),
+    'appId': os.getenv("APP_ID"),
+    'measurementId': os.getenv("MEASUREMENT_ID"),
     'databaseURL': ''
 }
 
