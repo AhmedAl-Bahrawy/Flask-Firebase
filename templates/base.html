@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %}</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {% block floating_shapes %}
+    <div class="floating-shapes">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    {% endblock %} {% block navbar %}{% endblock %} {% block content %}{%
+    endblock %} {% block scripts %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Flash message auto-dismiss
+        const flashMessages = document.querySelectorAll(".flash");
+        flashMessages.forEach(function (flash) {
+          setTimeout(() => {
+            flash.classList.add("hide");
+            setTimeout(() => {
+              flash.remove();
+            }, 500);
+          }, 5000);
+
+          flash.addEventListener("click", function () {
+            flash.classList.add("hide");
+            setTimeout(() => {
+              flash.remove();
+            }, 500);
+          });
+        });
+      });
+    </script>
+    {% endblock %} {% block extra_scripts %}{% endblock %}
+  </body>
+</html>

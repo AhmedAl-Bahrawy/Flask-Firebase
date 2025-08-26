@@ -1,480 +1,156 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Dashboard</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-      }
+{% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
+body_class %}dashboard{% endblock %} {% block navbar %}
+<nav class="navbar">
+  <a href="/" class="logo">Dashboard</a>
+  <div class="nav-buttons">
+    <form method="GET" action="{{ url_for('logout') }}">
+      <button type="submit" class="logout-btn">Sign Out</button>
+    </form>
+    <form method="POST" action="{{ url_for('delete_account') }}">
+      <button type="submit" class="logout-btn">Delete Account</button>
+    </form>
+  </div>
+</nav>
+{% endblock %} {% block flash_class %}dashboard{% endblock %} {% block
+flash_messages %} {% with messages = get_flashed_messages(with_categories=true)
+%} {% if messages %}
+<div class="flash-messages dashboard">
+  {% for category, message in messages %}
+  <div class="flash {{ category }}" role="alert">
+    {% if category == 'success' %}
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+        fill="currentColor"
+      />
+    </svg>
+    {% else %}
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+        fill="currentColor"
+      />
+    </svg>
+    {% endif %} {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %} {% endwith %} {% if not user.is_verified %}
+<div class="flash-messages dashboard">
+  <div class="flash error" role="alert">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+        fill="currentColor"
+      />
+    </svg>
+    Please verify your email to access all features.
+  </div>
+</div>
+{% endif %} {% endblock %} {% block content %}
+<div class="dashboard-container">
+  <div class="welcome-section">
+    <h1>Welcome back, {{ user.fname }}! 👋</h1>
+  </div>
 
-      body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        color: #333;
-      }
-
-      .navbar {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 1rem 2rem;
-        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        backdrop-filter: blur(10px);
-      }
-
-      .logo {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #764ba2;
-        text-decoration: none;
-      }
-
-      .nav-buttons {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-      }
-
-      .logout-btn {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        color: white;
-        border: none;
-        padding: 0.5rem 1.5rem;
-        border-radius: 25px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-      }
-
-      .logout-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 7rem auto 2rem;
-        padding: 0 2rem;
-      }
-
-      .welcome-section {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-        backdrop-filter: blur(4px);
-        animation: slideDown 0.6s ease-out;
-      }
-
-      .profile-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        animation: slideUp 0.6s ease-out 0.3s both;
-      }
-
-      .profile-card {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-        backdrop-filter: blur(4px);
-        transition: transform 0.3s ease;
-      }
-
-      .profile-card:hover {
-        transform: translateY(-5px);
-      }
-
-      .profile-card h3 {
-        color: #764ba2;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .profile-info {
-        display: grid;
-        gap: 1rem;
-      }
-
-      .info-item {
-        padding: 1rem;
-        background: rgba(118, 75, 162, 0.1);
-        border-radius: 12px;
-        transition: all 0.3s ease;
-      }
-
-      .info-item:hover {
-        background: rgba(118, 75, 162, 0.15);
-        transform: translateX(5px);
-      }
-
-      .info-label {
-        font-size: 0.8rem;
-        color: #666;
-        margin-bottom: 0.25rem;
-      }
-
-      .info-value {
-        font-size: 1rem;
-        color: #333;
-        font-weight: 500;
-      }
-
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .floating-shapes div {
-        position: fixed;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: float 6s infinite;
-        z-index: -1;
-      }
-
-      .floating-shapes div:nth-child(1) {
-        width: 100px;
-        height: 100px;
-        top: 20%;
-        left: 10%;
-        animation-delay: 0s;
-      }
-
-      .floating-shapes div:nth-child(2) {
-        width: 150px;
-        height: 150px;
-        top: 60%;
-        right: 10%;
-        animation-delay: 2s;
-      }
-
-      .floating-shapes div:nth-child(3) {
-        width: 70px;
-        height: 70px;
-        bottom: 20%;
-        left: 20%;
-        animation-delay: 4s;
-      }
-
-      @keyframes float {
-        0% {
-          transform: translateY(0px) rotate(0deg);
-        }
-        50% {
-          transform: translateY(-20px) rotate(5deg);
-        }
-        100% {
-          transform: translateY(0px) rotate(0deg);
-        }
-      }
-
-      @keyframes slideInRight {
-        from {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-
-      @keyframes fadeOut {
-        from {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        to {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-      }
-
-      .flash-messages {
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        z-index: 1000;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        max-width: 400px;
-      }
-
-      .flash {
-        padding: 16px 24px;
-        border-radius: 12px;
-        color: white;
-        font-weight: 500;
-        backdrop-filter: blur(10px);
-        animation: slideInRight 0.5s ease forwards;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .flash::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          45deg,
-          rgba(255, 255, 255, 0.1),
-          rgba(255, 255, 255, 0)
-        );
-        pointer-events: none;
-      }
-
-      .flash.success {
-        background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
-      }
-
-      .flash.error {
-        background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
-      }
-
-      .flash.hide {
-        animation: fadeOut 0.5s ease forwards;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="floating-shapes">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-
-    <nav class="navbar">
-      <a href="/" class="logo">Dashboard</a>
-      <div class="nav-buttons">
-        <form method="GET" action="{{ url_for('logout') }}">
-          <button type="submit" class="logout-btn">Sign Out</button>
-        </form>
-        <form method="POST" action="{{ url_for('delete_account') }}">
-          <button type="submit" class="logout-btn">Delete Account</button>
-        </form>
-      </div>
-    </nav>
-
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div class="flash-messages">
-      {% for category, message in messages %}
-      <div class="flash {{ category }}" role="alert">
-        {% if category == 'success' %}
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <div class="profile-section">
+    <div class="profile-card">
+      <h3>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
-            d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+            d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
             fill="currentColor"
           />
         </svg>
-        {% else %}
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        Profile Information
+      </h3>
+      <div class="profile-info">
+        <div class="info-item">
+          <div class="info-label">Full Name</div>
+          <div class="info-value">{{ user.fname }} {{ user.lname }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Email Address</div>
+          <div class="info-value">{{ user.email }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Account ID</div>
+          <div class="info-value">{{ user.id[:8] }}...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <h3>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
-            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+            d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V11H13V17ZM13 9H11V7H13V9Z"
             fill="currentColor"
           />
         </svg>
-        {% endif %} {{ message }}
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %} {% endwith %} {% if not user.is_verified %}
-    <div class="flash error" role="alert">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-          fill="currentColor"
-        />
-      </svg>
-      Please verify your email to access all features.
-    </div>
-    {% endif %} {# end if not user.is_verified #}
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const flashMessages = document.querySelectorAll(".flash");
-        flashMessages.forEach(function (flash) {
-          // Auto-dismiss after 5 seconds
-          setTimeout(() => {
-            flash.classList.add("hide");
-            // Remove from DOM after animation
-            setTimeout(() => {
-              flash.remove();
-            }, 500);
-          }, 5000);
-
-          // Add click to dismiss
-          flash.addEventListener("click", function () {
-            flash.classList.add("hide");
-            setTimeout(() => {
-              flash.remove();
-            }, 500);
-          });
-        });
-      });
-    </script>
-
-    <div class="container">
-      <div class="welcome-section">
-        <h1>Welcome back, {{ user.fname }}! 👋</h1>
-      </div>
-
-      <div class="profile-section">
-        <div class="profile-card">
-          <h3>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                fill="currentColor"
-              />
-            </svg>
-            Profile Information
-          </h3>
-          <div class="profile-info">
-            <div class="info-item">
-              <div class="info-label">Full Name</div>
-              <div class="info-value">{{ user.fname }} {{ user.lname }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Email Address</div>
-              <div class="info-value">{{ user.email }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Account ID</div>
-              <div class="info-value">{{ user.id[:8] }}...</div>
-            </div>
-          </div>
+        Account Status
+      </h3>
+      <div class="profile-info">
+        <div class="info-item">
+          <div class="info-label">Status</div>
+          <div class="info-value">Active</div>
         </div>
-
-        <div class="profile-card">
-          <h3>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V11H13V17ZM13 9H11V7H13V9Z"
-                fill="currentColor"
-              />
-            </svg>
-            Account Status
-          </h3>
-          <div class="profile-info">
-            <div class="info-item">
-              <div class="info-label">Status</div>
-              <div class="info-value">Active</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Authentication</div>
-              <div class="info-value">Firebase</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Last Login</div>
-              <div class="info-value">Just now</div>
-            </div>
-          </div>
+        <div class="info-item">
+          <div class="info-label">Authentication</div>
+          <div class="info-value">Firebase</div>
         </div>
-
-        <div class="profile-card">
-          <h3>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"
-                fill="currentColor"
-              />
-            </svg>
-            Account Management
-          </h3>
-          <div class="profile-info">
-            <a
-              href="{{ url_for('delete_account') }}"
-              style="text-decoration: none"
-            >
-              <div
-                class="info-item"
-                style="
-                  background: rgba(239, 68, 68, 0.1);
-                  color: #ef4444;
-                  cursor: pointer;
-                  transition: all 0.3s ease;
-                "
-              >
-                <div class="info-label" style="color: #ef4444">Danger Zone</div>
-                <div
-                  class="info-value"
-                  style="display: flex; align-items: center; gap: 8px"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Delete Account
-                </div>
-              </div>
-            </a>
-          </div>
+        <div class="info-item">
+          <div class="info-label">Last Login</div>
+          <div class="info-value">Just now</div>
         </div>
       </div>
     </div>
-  </body>
-</html>
+
+    <div class="profile-card">
+      <h3>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"
+            fill="currentColor"
+          />
+        </svg>
+        Account Management
+      </h3>
+      <div class="profile-info">
+        <a href="{{ url_for('delete_account') }}" style="text-decoration: none">
+          <div class="info-item danger-zone">
+            <div class="info-label">Danger Zone</div>
+            <div class="info-value">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                  fill="currentColor"
+                />
+              </svg>
+              Delete Account
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,459 +1,74 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Sign Up</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-      }
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
+body_class %}register{% endblock %} {% block flash_class %}inline{% endblock %}
+{% block flash_item_class %}inline{% endblock %} {% block content %}
+<div class="container large">
+  <h2 class="register">Create Account</h2>
 
-      body {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        overflow-x: hidden;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+  {% block flash_messages %} {% with messages =
+  get_flashed_messages(with_categories=true) %} {% if messages %}
+  <div class="flash-messages inline">
+    {% for category, message in messages %}
+    <div class="flash {{ category }} inline">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %} {% endwith %} {% endblock %}
 
-      @keyframes float {
-        0% {
-          transform: translateY(0px) rotate(0deg);
-        }
-        50% {
-          transform: translateY(-20px) rotate(5deg);
-        }
-        100% {
-          transform: translateY(0px) rotate(0deg);
-        }
-      }
-
-      .container {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 2.5rem;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-        backdrop-filter: blur(4px);
-        width: 100%;
-        max-width: 500px;
-        animation: fadeIn 0.6s ease-out;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .container::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(
-          45deg,
-          transparent,
-          rgba(255, 255, 255, 0.1),
-          transparent
-        );
-        transform: rotate(45deg);
-        animation: shine 3s infinite;
-      }
-
-      @keyframes shine {
-        0% {
-          transform: translateX(-200%) rotate(45deg);
-        }
-        100% {
-          transform: translateX(200%) rotate(45deg);
-        }
-      }
-
-      h2 {
-        color: #333;
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 2em;
-        font-weight: 600;
-        position: relative;
-      }
-
-      h2::after {
-        content: "";
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 50px;
-        height: 3px;
-        background: linear-gradient(90deg, #764ba2, #667eea);
-        border-radius: 2px;
-      }
-      .form-group {
-        margin-bottom: 1.5rem;
-        position: relative;
-        animation: fadeIn 0.6s ease-out forwards;
-        opacity: 0;
-      }
-
-      .form-group:nth-child(1) {
-        animation-delay: 0.2s;
-      }
-      .form-group:nth-child(2) {
-        animation-delay: 0.3s;
-      }
-      .form-group:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-      .form-group:nth-child(4) {
-        animation-delay: 0.5s;
-      }
-
-      .form-group {
-        position: relative;
-      }
-
-      label {
-        position: absolute;
-        left: 1rem;
-        top: 1rem;
-        padding: 0 0.25rem;
-        background-color: white;
-        color: #666;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        pointer-events: none;
-      }
-
-      input {
-        width: 100%;
-        padding: 1rem;
-        border: 2px solid #e1e1e1;
-        border-radius: 12px;
-        font-size: 1rem;
-        background: white;
-        transition: all 0.3s ease;
-      }
-
-      input:focus,
-      input:not(:placeholder-shown) {
-        outline: none;
-        border-color: #764ba2;
-        box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
-      }
-
-      input:focus + label,
-      input:not(:placeholder-shown) + label {
-        transform: translateY(-1.75rem) translateX(-0.25rem) scale(0.8);
-        color: #764ba2;
-        background-color: white;
-        padding: 0 0.5rem;
-      }
-
-      button {
-        width: 100%;
-        padding: 1rem;
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 1rem;
-        position: relative;
-        overflow: hidden;
-        animation: fadeIn 0.6s ease-out 0.8s forwards;
-        opacity: 0;
-      }
-
-      button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      }
-
-      button:active {
-        transform: translateY(-1px);
-      }
-
-      button::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.2),
-          transparent
-        );
-        transform: translateX(-100%);
-      }
-
-      button:hover::after {
-        animation: buttonShine 1s;
-      }
-
-      @keyframes buttonShine {
-        100% {
-          transform: translateX(100%);
-        }
-      }
-      .footer {
-        text-align: center;
-        margin-top: 1.5rem;
-        animation: fadeIn 0.6s ease-out 1s forwards;
-        opacity: 0;
-      }
-
-      .footer a {
-        color: #764ba2;
-        text-decoration: none;
-        font-weight: 500;
-        position: relative;
-      }
-
-      .footer a::after {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 2px;
-        bottom: -2px;
-        left: 0;
-        background: linear-gradient(90deg, #764ba2, #667eea);
-        transform: scaleX(0);
-        transform-origin: right;
-        transition: transform 0.3s ease;
-      }
-
-      .footer a:hover::after {
-        transform: scaleX(1);
-        transform-origin: left;
-      }
-
-      .name-fields {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      .name-fields .form-group {
-        flex: 1;
-        margin-bottom: 0;
-      }
-
-      .terms {
-        display: flex;
-        align-items: flex-start;
-        margin: 1.5rem 0;
-        animation: fadeIn 0.6s ease-out 0.7s forwards;
-        opacity: 0;
-      }
-
-      .terms input {
-        width: 18px;
-        height: 18px;
-        margin: 0.25rem 0.5rem 0 0;
-        accent-color: #764ba2;
-        cursor: pointer;
-      }
-
-      .terms label {
-        color: #666;
-        font-size: 0.9rem;
-        cursor: pointer;
-        margin: 0;
-      }
-
-      .floating-shapes div {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: float 6s infinite;
-      }
-
-      .floating-shapes div:nth-child(1) {
-        width: 80px;
-        height: 80px;
-        top: 10%;
-        left: 15%;
-        animation-delay: 0s;
-      }
-
-      .floating-shapes div:nth-child(2) {
-        width: 60px;
-        height: 60px;
-        top: 50%;
-        right: 15%;
-        animation-delay: 2s;
-      }
-
-      .floating-shapes div:nth-child(3) {
-        width: 40px;
-        height: 40px;
-        bottom: 10%;
-        left: 25%;
-        animation-delay: 4s;
-      }
-
-      @keyframes progressBar {
-        0% {
-          width: 0%;
-        }
-        100% {
-          width: 100%;
-        }
-      }
-
-      .password-strength {
-        height: 4px;
-        background: #e1e1e1;
-        border-radius: 2px;
-        margin-top: 0.5rem;
-        overflow: hidden;
-      }
-
-      .password-strength::after {
-        content: "";
-        display: block;
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, #764ba2, #667eea);
-        transition: width 0.3s ease;
-      }
-
-      input[type="password"]:valid + .password-strength::after {
-        width: 100%;
-      }
-
-      .flash-messages {
-        margin-bottom: 1rem;
-      }
-
-      .flash {
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-        animation: flashIn 0.3s ease-out;
-      }
-
-      .flash.success {
-        background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
-      }
-
-      .flash.error {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="floating-shapes">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-    <div class="container">
-      <h2>Create Account</h2>
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %}
-      <div class="flash-messages">
-        {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
+  <form method="post">
+    <div class="name-fields">
+      <div class="form-group">
+        <input type="text" id="fname" name="fname" required placeholder=" " />
+        <label for="fname" class="floating-label">First Name</label>
       </div>
-      {% endif %} {% endwith %}
-      <form method="post">
-        <div class="name-fields">
-          <div class="form-group">
-            <input
-              type="text"
-              id="fname"
-              name="fname"
-              required
-              placeholder=" "
-            />
-            <label for="fname">First Name</label>
-          </div>
-          <div class="form-group">
-            <input
-              type="text"
-              id="lname"
-              name="lname"
-              required
-              placeholder=" "
-            />
-            <label for="lname">Last Name</label>
-          </div>
-        </div>
-        <div class="form-group">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            required
-            autocomplete="email"
-            placeholder=" "
-          />
-          <label for="email">Email address</label>
-        </div>
-
-        <div class="form-group">
-          <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-            title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-            placeholder=" "
-          />
-          <label for="password">Password</label>
-        </div>
-        <div class="form-group">
-          <input
-            type="password"
-            id="cpassword"
-            name="cpassword"
-            required
-            placeholder=" "
-          />
-          <label for="cpassword">Confirm Password</label>
-        </div>
-        <div class="terms">
-          <input type="checkbox" id="terms" name="terms" required />
-          <label for="terms"
-            >I agree to the Terms of Service and Privacy Policy</label
-          >
-        </div>
-        <button type="submit">Create Account</button>
-        <div class="footer">
-          <p>
-            Already have an account?
-            <a href="{{ url_for('login') }}">Sign in</a>
-          </p>
-        </div>
-      </form>
+      <div class="form-group">
+        <input type="text" id="lname" name="lname" required placeholder=" " />
+        <label for="lname" class="floating-label">Last Name</label>
+      </div>
     </div>
-  </body>
-</html>
+    <div class="form-group">
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        autocomplete="email"
+        placeholder=" "
+      />
+      <label for="email" class="floating-label">Email address</label>
+    </div>
+    <div class="form-group">
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+        placeholder=" "
+      />
+      <label for="password" class="floating-label">Password</label>
+    </div>
+    <div class="form-group">
+      <input
+        type="password"
+        id="cpassword"
+        name="cpassword"
+        required
+        placeholder=" "
+      />
+      <label for="cpassword" class="floating-label">Confirm Password</label>
+    </div>
+    <div class="terms">
+      <input type="checkbox" id="terms" name="terms" required />
+      <label for="terms"
+        >I agree to the Terms of Service and Privacy Policy</label
+      >
+    </div>
+    <button type="submit">Create Account</button>
+    <div class="footer">
+      <p>
+        Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+      </p>
+    </div>
+  </form>
+</div>
+{% endblock %}
