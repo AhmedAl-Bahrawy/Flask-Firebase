@@ -202,10 +202,78 @@
           transform: translateX(100%);
         }
       }
+
+      /* Google Sign-In Button Styles */
+      .google-btn {
+        width: 100%;
+        padding: 1rem;
+        background: white;
+        color: #333;
+        border: 2px solid #e1e1e1;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 0.6s ease-out 0.7s forwards;
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .google-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-color: #4285f4;
+      }
+
+      .google-btn:active {
+        transform: translateY(-1px);
+      }
+
+      .google-icon {
+        width: 20px;
+        height: 20px;
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KPHBhdGggZD0iTTE3LjY0IDkuMjA0NTRjMC0uNjM5MDgtLjA1NzI3LTEuMjUyNy0uMTY0NTQtMS44NDA5SDlWMTAuODVoNC44NDQ1YzAtLjIwNDU0LS4yMjcyNy0uMzQwOS0uNDMxODEtLjU2ODE4LS4yNzI3My0uMzQwOS0uNjgxODItLjc2MzY0LTEuMjI3MjctMS40MzE4MkwxMi4zOTU0IDExLjE0MzJjLjE2MzY0LS41NjgxOC4yNzI3My0xLjIyNzI3LjI3MjczLTEuOTM5MDl6IiBmaWxsPSIjNDI4NUY0Ii8+CjxwYXRoIGQ9Ik05IDEzLjY2ODZjLS4xNjM2NCAwLS4zMTM2NC0uMDU3MjctLjQ1NDU1LS4xNjM2NGwtLjQ1NDU1LS4zNDA5YzAtLjI5NTQ1IDAtLjU5MDkxIDAtLjg4NjM2SDVWMTMuMDFjLjE2MzY0LjA5MDkxLjM0MDkxLjE2MzY0LjUxODE4LjIzNjM2LjE5MDkxLjA5MDkxLjM5NTQ1LjE2MzY0LjU5MDkxLjIyNzI3LjE5MDkxLjA1NzI3LjM5NTQ1LjA5MDkxLjU5MDkxLjEyNzI3LjIwNDU0LjAyMjczLjQwOTA5LjAyMjczLjYxMzY0LS4wMTE2NGMuMjA0NTQtLjAzNDA5LjM5NTQ1LS4wOTA5MS41NjgxOC0uMTc3MjdsNC41NDU0NS00LjI5NTQ1Yy4yMjczLS4yMDQ1NS40MDkwOS0uNDU0NTUuNTQ1NDUtLjczNjM2SDlWNS41OTU0NWgtNC4xNTQ1NHYxLjc1NDU1YzAtLjI5NTQ1IDAtLjU5MDkxIDAtLjg4NjM2aC0uNjgxODJjLS4yMjczIDAtLjQ1NDU1LjA1NzI3LS42NTQ1NS4xNjM2NGwtLjQwOTA5LjMxMzY0Yy0uMDkwOTEuMDY4MTgtLjE2MzY0LjE1LS4yMTM2NC4yNTA5MS0uMDU3MjcuMTA2OTUtLjA4NDU1LjIyNzI3LS4wODQ1NS4zNTA5MXY1LjMxODE4YzAgLjEyNzI3LjAyNzI3LjI0NTQ1LjA4NDU1LjM1NDU1LjA1LjEuMTIyNy4xODI3My4yMTM2NC4yNTA5bC40MDkwOS4zMTM2M2MuMiAuMTA2OTUuNDMxODEuMTYzNjQuNjU0NTUuMTYzNjRoNC42ODI3M3oiIGZpbGw9IiMzNEE4NTMiLz4KPHA+PC9wPgo8cGF0aCBkPSJNMTQuNCAzLjc5MDkxYzAtLjI5NTQ1LS4xMzYzNi0uNTY4MTgtLjM0MDktLjc1TDE0LjA0NTUgMi45MzE4MmMtLjA5MDkxLS4wNjgxOC0uMjA0NTUtLjEyNzI3LS4zNDA5LS4xNjM2NC0uMTM2MzYtLjAzNDA5LS4yNzI3My0uMDIyNzMtLjQwOTA5IDAtLjEzNjM2LjAyMjczLS4yNTQ1NS4wNjgxOC0uMzU0NTUuMTM2MzZ2YUwxMS4yNzI3IDRIMTMuNzA0NVY4LjU5MDlIMTJWOC41OTA5SDl2Mkg3VjEwSDUuMjcyNzN2MS4yNzI3aDEuNzI3MjdWMTNoMS43MjcyN1YxNC4yNzI3aDEuNzI3Mjd2MWgxLjcyNzI3VjExaDEuNzI3Mjd2LTEuMjcyN0gxM1Y3aDEuMjcyN1Y1LjI3MjczaC0xLjI3MjdWNGgxLjI3Mjd2LTEuMjcyN2gxLjEyNzI3VjEuNzI3MjdIMTMuNzI3M3YuMDkwOTFIMTMuNzI3M3oiIGZpbGw9IiNGQkJDMDQiLz4KPHA+PC9wPgo8cGF0aCBkPSJNMTAuNjE4MiA2Ljk1NDU1aDMuOTI3MjhWMTEuMTI3M0g5VjEwLjY4MThIMTBWNi45NTQ1NWMwIC4wMjI3Mi4wMzY0IDAtLjYxODIgMHoiIGZpbGw9IiNGQkJDMDQiLz4KPHA+PC9wPgo8L2c+Cjwvc3ZnPgo=");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      .divider {
+        position: relative;
+        text-align: center;
+        margin: 1.5rem 0;
+        animation: fadeIn 0.6s ease-out 0.8s forwards;
+        opacity: 0;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #e1e1e1, transparent);
+      }
+
+      .divider span {
+        background: rgba(255, 255, 255, 0.95);
+        color: #666;
+        padding: 0 1rem;
+        font-size: 0.9rem;
+      }
+
       .footer {
         text-align: center;
         margin-top: 1.5rem;
-        animation: fadeIn 0.6s ease-out 0.8s forwards;
+        animation: fadeIn 0.6s ease-out 0.9s forwards;
         opacity: 0;
       }
 
@@ -304,6 +372,57 @@
         background: rgba(239, 68, 68, 0.1);
         color: #ef4444;
       }
+
+      .flash.warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+      }
+
+      .flash.info {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+      }
+
+      @keyframes flashIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Loading state */
+      .loading {
+        pointer-events: none;
+        opacity: 0.6;
+        position: relative;
+      }
+
+      .loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid transparent;
+        border-top: 2px solid #333;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -322,7 +441,7 @@
         {% endfor %}
       </div>
       {% endif %} {% endwith %}
-      <form method="post">
+      <form method="post" id="loginForm">
         <div class="form-group">
           <input
             type="email"
@@ -341,21 +460,125 @@
             name="password"
             required
             autocomplete="current-password"
+            placeholder="Password"
           />
+          <label for="password">Password</label>
         </div>
         <div class="remember-me">
           <input type="checkbox" id="remember" name="remember" />
           <label for="remember">Remember me</label>
         </div>
         <button type="submit">Sign In</button>
-        <div class="footer">
-          <p>
-            Don't have an account?
-            <a href="{{ url_for('register') }}">Sign up</a>
-          </p>
-          <p><a href="{{ url_for('forgot_password') }}">Forgot password?</a></p>
-        </div>
       </form>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <button type="button" class="google-btn" id="googleSignInBtn">
+        <div class="google-icon"></div>
+        Continue with Google
+      </button>
+
+      <div class="footer">
+        <p>
+          Don't have an account?
+          <a href="{{ url_for('register') }}">Sign up</a>
+        </p>
+        <p><a href="{{ url_for('forgot_password') }}">Forgot password?</a></p>
+      </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+    <script>
+      // Firebase configuration - Replace with your config
+      const firebaseConfig = {
+        apiKey: "AIzaSyADDXhfQxgj76lNDq2W9-BqlC3XYTOXWp8",
+        authDomain: "flask-auth-c8ce2.firebaseapp.com",
+        projectId: "flask-auth-c8ce2",
+        storageBucket: "flask-auth-c8ce2.firebasestorage.app",
+        messagingSenderId: "50459132624",
+        appId: "1:50459132624:web:a8ff2c906c78d814a314d5",
+        measurementId: "G-K3MJFW9LHF",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+
+      // Initialize Firebase Auth provider
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope("email");
+      provider.addScope("profile");
+
+      // Google Sign-In
+      document
+        .getElementById("googleSignInBtn")
+        .addEventListener("click", async function () {
+          const btn = this;
+          btn.classList.add("loading");
+          btn.textContent = "Signing in...";
+
+          try {
+            const result = await firebase.auth().signInWithPopup(provider);
+            const user = result.user;
+            const idToken = await user.getIdToken();
+
+            // Send token to backend
+            const response = await fetch("/google-auth", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                idToken: idToken,
+              }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              window.location.href = data.redirect;
+            } else {
+              throw new Error(data.error || "Google sign-in failed");
+            }
+          } catch (error) {
+            console.error("Google sign-in error:", error);
+
+            // Create and show error message
+            const flashContainer =
+              document.querySelector(".flash-messages") ||
+              document.createElement("div");
+            flashContainer.className = "flash-messages";
+
+            const flashDiv = document.createElement("div");
+            flashDiv.className = "flash error";
+            flashDiv.textContent =
+              error.message || "Google sign-in failed. Please try again.";
+
+            flashContainer.innerHTML = "";
+            flashContainer.appendChild(flashDiv);
+
+            if (!document.querySelector(".flash-messages")) {
+              document.querySelector("h2").after(flashContainer);
+            }
+          } finally {
+            btn.classList.remove("loading");
+            btn.innerHTML =
+              '<div class="google-icon"></div>Continue with Google';
+          }
+        });
+
+      // Regular form submission
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          const submitBtn = this.querySelector('button[type="submit"]');
+          submitBtn.classList.add("loading");
+          submitBtn.textContent = "Signing in...";
+        });
+    </script>
   </body>
 </html>

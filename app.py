@@ -1,11 +1,12 @@
 import os
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for, jsonify, session
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from authentication import auth
 from models import db, UserModel
 from typing import Tuple, Optional, Dict, Any, Union
 from functools import wraps
+import json
 
 # Load environment
 load_dotenv()
@@ -88,7 +89,8 @@ def create_local_user(
     fname: str,
     lname: str,
     id_token: str,
-    refresh_token: str
+    refresh_token: str,
+    is_google_user: bool = False
 ) -> Optional[UserModel]:
     """
     Create a new user in the local database.
@@ -100,6 +102,7 @@ def create_local_user(
         lname: Last name
         id_token: Firebase ID token
         refresh_token: Firebase refresh token
+        is_google_user: Whether this is a Google user
         
     Returns:
         Created UserModel instance or None if failed
@@ -115,7 +118,7 @@ def create_local_user(
         )
     """
     try:
-        user = UserModel(local_id, email, fname, lname, id_token, refresh_token)
+        user = UserModel(local_id, email, fname, lname, id_token, refresh_token, is_verified=is_google_user, is_google_user=is_google_user)
         db.session.add(user)
         db.session.commit()
         return user
@@ -312,6 +315,72 @@ def update_user_tokens(idToken: str, refreshToken: str) -> None:
     current_user.refresh_token = refreshToken
     db.session.commit()
 
+# ---- Google Authentication Helper Functions ----
+
+def handle_google_auth_response(id_token: str) -> Tuple[bool, Optional[str], Optional[Dict]]:
+    """
+    Handle Google authentication response from Firebase.
+    
+    Args:
+        id_token: Firebase ID token from Google auth
+        
+    Returns:
+        Tuple of (success, error_message, user_data)
+    """
+    try:
+        # Get account info to extract user details
+        account_info = auth.get_account_info(id_token)
+        
+        if not account_info or 'users' not in account_info:
+            return False, "Invalid authentication response", None
+            
+        user_info = account_info['users'][0]
+        
+        # Extract user data
+        user_data = {
+            'localId': user_info.get('localId'),
+            'email': user_info.get('email'),
+            'displayName': user_info.get('displayName', ''),
+            'emailVerified': user_info.get('emailVerified', False),
+            'idToken': id_token,
+            'providerId': user_info.get('providerUserInfo', [{}])[0].get('providerId', '')
+        }
+        
+        # Generate a refresh token by signing in with custom token (workaround)
+        try:
+            # For Google users, we'll use the existing token and create a mock refresh token
+            user_data['refreshToken'] = f"google_refresh_{user_data['localId']}"
+        except Exception as refresh_error:
+            print("Warning: Could not generate refresh token for Google user:", refresh_error)
+            user_data['refreshToken'] = f"google_refresh_{user_data['localId']}"
+            
+        return True, None, user_data
+        
+    except Exception as e:
+        print("Error handling Google auth:", e)
+        return False, "Authentication failed. Please try again.", None
+
+def parse_display_name(display_name: str) -> Tuple[str, str]:
+    """
+    Parse display name into first and last name.
+    
+    Args:
+        display_name: Full display name from Google
+        
+    Returns:
+        Tuple of (first_name, last_name)
+    """
+    if not display_name:
+        return "User", ""
+        
+    parts = display_name.strip().split(' ')
+    if len(parts) == 1:
+        return parts[0], ""
+    elif len(parts) >= 2:
+        return parts[0], ' '.join(parts[1:])
+    else:
+        return "User", ""
+
 # ---- Routes ----
 @app.route("/", methods=["POST", "GET"])
 @login_required
@@ -328,7 +397,7 @@ def home():
         if not success:
             return redirect(redirect_url)
     
-    if not current_user.is_verified:
+    if not current_user.is_verified and not current_user.is_google_user:
         flash("Please verify your email to access the home page.", "error")
     
     return render_template("index.html", user=current_user)
@@ -412,6 +481,70 @@ def login():
             flash("An error occurred during login. Please try again.", "error")
             
     return render_template("login.html")
+
+@app.route("/google-auth", methods=["POST"])
+def google_auth():
+    """Handle Google authentication from frontend"""
+    try:
+        data = request.get_json()
+        id_token = data.get('idToken')
+        
+        if not id_token:
+            return jsonify({'success': False, 'error': 'No ID token provided'}), 400
+            
+        # Handle Google authentication
+        success, error_message, user_data = handle_google_auth_response(id_token)
+        if not success:
+            return jsonify({'success': False, 'error': error_message}), 400
+            
+        localId = user_data["localId"]
+        email = user_data["email"]
+        display_name = user_data.get("displayName", "")
+        email_verified = user_data.get("emailVerified", True)  # Google users are pre-verified
+        
+        # Parse name
+        fname, lname = parse_display_name(display_name)
+        
+        # Check if user exists in DB
+        user = db.session.get(UserModel, localId)
+        if not user:
+            # Create new Google user
+            user = UserModel(
+                localId, 
+                email, 
+                fname, 
+                lname, 
+                id_token, 
+                user_data["refreshToken"],
+                is_verified=True,  # Google users are pre-verified
+                is_google_user=True
+            )
+            db.session.add(user)
+        else:
+            # Update existing user
+            user.idToken = id_token
+            user.refresh_token = user_data["refreshToken"]
+            user.is_verified = True  # Ensure Google users are marked as verified
+            if not user.fname and fname:
+                user.fname = fname
+            if not user.lname and lname:
+                user.lname = lname
+        
+        db.session.commit()
+        
+        # Log the user in
+        login_user(user)
+        
+        return jsonify({
+            'success': True, 
+            'redirect': url_for('home'),
+            'message': 'Google login successful'
+        })
+        
+    except Exception as e:
+        print("Error in Google auth:", e)
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Authentication failed'}), 500
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -531,20 +664,26 @@ def resend_verification():
         print("Error sending verification email:", e)
         flash("Could not send verification email. Please try again later.", "error")
     
-    return redirect("/verify_info")
+    return redirect("/verify-info")
 
 
 def delete_firebase_account(password: str) -> Optional[Tuple[bool, str]]:
     """Delete Firebase account after verifying password. Returns (success, redirect_url) if action needed."""
     try:
-        # Verify password by attempting to sign in
-        user_data = auth.sign_in_with_email_and_password(current_user.email, password)
-        # Update tokens with fresh ones
-        update_user_tokens(user_data['idToken'], user_data['refreshToken'])
-        
-        # Delete Firebase account
-        auth.delete_user_account(user_data['idToken'])
-        return None
+        # For Google users, we can't verify password, so skip password verification
+        if current_user.is_google_user:
+            # For Google users, directly delete using current token
+            auth.delete_user_account(current_user.idToken)
+            return None
+        else:
+            # Verify password by attempting to sign in
+            user_data = auth.sign_in_with_email_and_password(current_user.email, password)
+            # Update tokens with fresh ones
+            update_user_tokens(user_data['idToken'], user_data['refreshToken'])
+            
+            # Delete Firebase account
+            auth.delete_user_account(user_data['idToken'])
+            return None
     except Exception as e:
         print("Error in delete_firebase_account:", e)
         if "INVALID_PASSWORD" in str(e):
@@ -560,10 +699,14 @@ def delete_account():
         return render_template("delete-account.html", user=current_user)
         
     if request.method == "POST":
-        password = request.form.get("password")
-        if not password:
-            flash("Please provide your password to delete your account.", "error")
-            return redirect(url_for('delete_account'))
+        # For Google users, password is not required
+        if not current_user.is_google_user:
+            password = request.form.get("password")
+            if not password:
+                flash("Please provide your password to delete your account.", "error")
+                return redirect(url_for('delete_account'))
+        else:
+            password = None
 
         # Delete Firebase account first
         result = delete_firebase_account(password)
